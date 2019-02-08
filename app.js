@@ -5,6 +5,7 @@ const controller = require('./controller')
 const rateLimit = require("express-rate-limit");
 
 const app = express();
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: process.env.RATE_LIMIT // limit each IP to 100 requests per windowMs
