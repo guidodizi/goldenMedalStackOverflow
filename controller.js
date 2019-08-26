@@ -152,14 +152,21 @@ const run = async (req, res) => {
   };
 
   main()
-    .then(() => res.write(JSON.stringify({ done: true })))
+    .then(() => {
+      res.write(JSON.stringify({ done: true }));
+      return res.end();
+    })
     .catch(err => {
       console.log(err);
       sendToWhatsapp(err.message)
-        .then(() => res.write(JSON.stringify({ err, done: false })))
+        .then(() => {
+          res.write(JSON.stringify({ err, done: false }));
+          return res.end();
+        })
         .catch(err => {
           console.log(err);
           res.write(JSON.stringify({ err, done: false }));
+          return res.end();
         });
     });
 };
