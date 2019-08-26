@@ -120,7 +120,7 @@ const run = async (req, res) => {
     } else {
       throw new Error("Can't find log in on StackOverflow. Robot detected");
     }
-
+    
     const [badge, result] = await page
       .evaluate(() => {
         const badge = document.querySelector("#badge-card-next > div > div:nth-child(2)");
