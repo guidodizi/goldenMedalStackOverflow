@@ -42,6 +42,7 @@ const extendTimeoutMiddleware = (req, res, next) => {
         res.write(space);
         count++;
 
+        // wait for 1:14min max
         if (count < 5){
           // Wait another 15 seconds
           waitAndSend();

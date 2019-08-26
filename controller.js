@@ -26,7 +26,7 @@ const run = async (req, res) => {
 
     await page.waitFor(3000);
 
-    await page.goto(`https://wa.me/59894388685?text=${encodeURI(result)}`, {
+    await page.goto(`https://wa.me/${encodeURI(process.env.PHONE)}?text=${encodeURI(result)}`, {
       waitUntil: "networkidle2"
     });
 
@@ -96,7 +96,7 @@ const run = async (req, res) => {
     );
     cookies.forEach(async cookie => await page.setCookie(cookie));
 
-    await page.goto("https://stackoverflow.com/users/7037861/guido-dizioli", {
+    await page.goto(`https://stackoverflow.com/users${encodeURI(process.env.SO_USER)}`, {
       waitUntil: "networkidle2"
     });
 
@@ -152,14 +152,14 @@ const run = async (req, res) => {
   };
 
   main()
-    .then(() => res.write({ done: true }))
+    .then(() => res.write(JSON.stringify({ done: true })))
     .catch(err => {
       console.log(err);
       sendToWhatsapp(err.message)
-        .then(() => res.write({ err, done: false }))
+        .then(() => res.write(JSON.stringify({ err, done: false })))
         .catch(err => {
           console.log(err);
-          res.write({ err, done: false });
+          res.write(JSON.stringify({ err, done: false }));
         });
     });
 };
