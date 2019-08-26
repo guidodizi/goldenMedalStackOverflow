@@ -6,7 +6,7 @@ const cookies = require("./cookies");
 const localStorage = require("./localStorage");
 
 const run = async (req, res) => {
-  const browser = await puppeteer.launch({ headless: false, args: ["--no-sandbox"] });
+  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox'] });
 
   const sendToWhatsapp = async result => {
     const page = await browser.newPage();
