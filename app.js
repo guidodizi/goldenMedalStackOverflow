@@ -27,7 +27,9 @@ const extendTimeoutMiddleware = (req, res, next) => {
   res.on('data', (data) => {
     // Look for something other than our blank space to indicate that real
     // data is now being sent back to the client.
+    console.log('data event')
     if (data !== space) {
+      console.log('data event end')
       isDataSent = true;
     }
   });
@@ -36,11 +38,6 @@ const extendTimeoutMiddleware = (req, res, next) => {
     setTimeout(() => {
       // If the response hasn't finished and hasn't sent any data back....
       if (!isFinished && !isDataSent) {
-        // Need to write the status code/headers if they haven't been sent yet.
-        if (!res.headersSent) {
-          res.writeHead(202);
-        }
-
         res.write(space);
 
         // Wait another 15 seconds
