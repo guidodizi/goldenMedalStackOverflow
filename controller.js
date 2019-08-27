@@ -1,18 +1,15 @@
 const puppeteer = require("puppeteer");
 require("dotenv").config();
-const randomUseragent = require("random-useragent");
 
-const cookies = require("./cookies");
-const localStorage = require("./localStorage");
+const cookies = JSON.parse(process.env.COOKIES);
+const localStorage = JSON.parse(process.env.LOCAL_STORAGE);
 
 const run = async (req, res) => {
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox'] });
 
   const sendToWhatsapp = async result => {
     const page = await browser.newPage();
-    await page.setUserAgent(
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
-    );
+    await page.setUserAgent(process.env.USER_AGENT);
     cookies.forEach(async cookie => await page.setCookie(cookie));
 
     await page.goto(`https://web.whatsapp.com`, { waitUntil: "networkidle2" });
