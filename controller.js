@@ -29,19 +29,18 @@ const run = async (req, res) => {
 
     await page.click("#action-button");
 
-    await page.waitForSelector("#main > footer > div > div:nth-child(3) > button > span", {
-      timeout: 90000
+    await page.waitForSelector("#main > footer > div.notreal > div:nth-child(3) > button > span", {
+      timeout: 15000
+    }).catch(async () => {
+      console.log("enter");
+      await page.click("#main > footer > div > div:nth-child(2) > div > div:nth-child(2)");
+      await page.keyboard.press('Enter');
+      await page.waitFor(8000);
+      await browser.close()
+      throw Error('done')
     });
     await page.waitFor(3000);
     await page.click("#main > footer > div > div:nth-child(3) > button > span");
-    const message = await page.$(
-      "#main > footer > div > div:nth-child(2) > div > div:nth-child(2)"
-    );
-    if (message.innerHTML) {
-      console.log("enter");
-      await page.click("#main > footer > div > div:nth-child(2) > div > div:nth-child(2)");
-      await page.type(String.fromCharCode(13));
-    }
     await page.waitFor(8000);
   };
 
@@ -105,17 +104,17 @@ const run = async (req, res) => {
     );
 
     if (login1) {
-      await runLogin(login1).catch(err => {
+      await runLogin(login1).catch(async (err) => {
         console.log(err);
-        throw new Error("Couldn't log in");
+        await sendToWhatsapp("Couldn't log in");
       });
     } else if (login2) {
-      await runLogin(login2).catch(err => {
+      await runLogin(login2).catch(async (err) => {
         console.log(err);
-        throw new Error("Couldn't log in");
+        await sendToWhatsapp("Couldn't log in");
       });
     } else {
-      throw new Error("Can't find log in on StackOverflow. Robot detected");
+      await sendToWhatsapp("Can't find log in on StackOverflow. Robot detected");
     }
     
     const [badge, result] = await page
@@ -135,36 +134,32 @@ const run = async (req, res) => {
         if (badge && result) return [badge.innerHTML, result.innerHTML];
         else if (badge2 && result2) return [badge2.innerHTML, result2.innerHTML];
       })
-      .catch(err => {
+      .catch(async (err) => {
         console.log(err);
-        throw new Error("Couldn't find results on StackOverflow's page");
+        await sendToWhatsapp("Couldn't find results on StackOverflow's page");
       });
 
     if (badge === "Fanatic") {
       await sendToWhatsapp(`StackOverflow result: ${result}`);
     } else {
-      throw new Error(`StackOverflow tracked badge is not Fanatic`);
+      await sendToWhatsapp(`StackOverflow tracked badge is not Fanatic`);
     }
     await browser.close();
   };
 
   main()
-    .then(() => {
+    .then(async() => {
       res.write(JSON.stringify({ done: true }));
       return res.end();
     })
     .catch(err => {
       console.log(err);
-      sendToWhatsapp(err.message)
-        .then(() => {
-          res.write(JSON.stringify({ err, done: false }));
-          return res.end();
-        })
-        .catch(err => {
-          console.log(err);
-          res.write(JSON.stringify({ err, done: false }));
-          return res.end();
-        });
+      if (err.message === 'done'){
+        res.write(JSON.stringify({ done: true }));
+        return res.end();
+      }
+      res.write(JSON.stringify({ err, done: false }));
+      return res.end();
     });
 };
 module.exports = { run };

@@ -11,6 +11,7 @@ const extendTimeoutMiddleware = (req, res, next) => {
   const space = ' ';
   let isFinished = false;
   let isDataSent = false;
+  let count = 0;
 
   res.once('finish', () => {
     isFinished = true;
@@ -39,8 +40,13 @@ const extendTimeoutMiddleware = (req, res, next) => {
       // If the response hasn't finished and hasn't sent any data back....
       if (!isFinished && !isDataSent) {
         res.write(space);
-        // Wait another 15 seconds
-        waitAndSend();
+        count++;
+
+        // wait for 150sec max
+        if (count <= 10){
+          // Wait another 15 seconds
+          waitAndSend();
+        }
       }
     }, 15000);
   };
