@@ -33,7 +33,9 @@ const run = async (req, res) => {
       timeout: 90000
     }).catch(async (err) => {
       console.log(err);
-      await page.click("#main > footer > div > div:nth-child(2) > div > div:nth-child(2)");
+      await page.click("#main > footer > div > div:nth-child(2) > div > div:nth-child(2)").catch(err =>{
+        throw err;
+      });
       await page.keyboard.press('Enter');
       await page.waitFor(8000);
       await browser.close()
