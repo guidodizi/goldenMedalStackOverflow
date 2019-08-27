@@ -2,7 +2,7 @@ const puppeteer = require("puppeteer");
 require("dotenv").config();
 
 const cookies = JSON.parse(process.env.COOKIES);
-const localStorage = JSON.parse(process.env.LOCAL_STORAGE);
+const localStorage = JSON.parse(process.env.WA_LOCAL_STORAGE);
 
 const run = async (req, res) => {
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox'] });
