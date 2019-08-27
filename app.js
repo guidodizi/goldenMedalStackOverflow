@@ -4,8 +4,15 @@ const helmet = require("helmet");
 const controller = require('./controller')
 
 const app = express();
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 1 // limit each IP to 100 requests per windowMs
+});
+
+app.set('trust proxy', 1);
 app.use(cors());
 app.use(helmet());
+app.use(limiter);
 
 const extendTimeoutMiddleware = (req, res, next) => {
   const space = ' ';
