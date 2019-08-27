@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const controller = require('./controller')
+const rateLimit = require("express-rate-limit");
 
 const app = express();
 const limiter = rateLimit({
