@@ -30,7 +30,7 @@ const run = async (req, res) => {
     await page.click("#action-button");
 
     await page.waitForSelector("#main > footer > div > div:nth-child(3) > button > span", {
-      timeout: 90000
+      timeout: 120000
     }).catch(async (err) => {
       console.log(err);
       await page.click("#main > footer > div > div:nth-child(2) > div > div:nth-child(2)").catch(err =>{
@@ -89,9 +89,8 @@ const run = async (req, res) => {
       await page.waitFor(8000);
     };
     const page = await browser.newPage();
-    await page.setUserAgent(
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
-    );
+    await page.setUserAgent(process.env.USER_AGENT);
+
     cookies.forEach(async cookie => await page.setCookie(cookie));
 
     await page.goto(`https://stackoverflow.com/users${encodeURI(process.env.SO_USER)}`, {
