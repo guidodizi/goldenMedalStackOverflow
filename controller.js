@@ -29,10 +29,10 @@ const run = async (req, res) => {
 
     await page.click("#action-button");
 
-    await page.waitForSelector("#main > footer > div.notreal > div:nth-child(3) > button > span", {
-      timeout: 15000
-    }).catch(async () => {
-      console.log("enter");
+    await page.waitForSelector("#main > footer > div > div:nth-child(3) > button > span", {
+      timeout: 90000
+    }).catch(async (err) => {
+      console.log(err);
       await page.click("#main > footer > div > div:nth-child(2) > div > div:nth-child(2)");
       await page.keyboard.press('Enter');
       await page.waitFor(8000);
