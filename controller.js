@@ -14,6 +14,7 @@ const run = async (req, res) => {
 
     await page.goto(`https://web.whatsapp.com`, { waitUntil: "networkidle2" });
 
+    // set local storage for Whatsapp
     await page.evaluate(initLocalStorage => {
       initLocalStorage.forEach(elem => {
         console.log(elem);
@@ -23,16 +24,19 @@ const run = async (req, res) => {
 
     await page.waitFor(3000);
 
+    // send message now that local storage is hydrated
     await page.goto(`https://wa.me/${encodeURI(process.env.PHONE)}?text=${encodeURI(result)}`, {
       waitUntil: "networkidle2"
     });
 
     await page.click("#action-button");
 
+    // wait for send button to click
     await page.waitForSelector("#main > footer > div > div:nth-child(3) > button > span", {
       timeout: 120000
     }).catch(async (err) => {
       console.log(err);
+      // if fails to find it, try to send by pressing enter
       await page.click("#main > footer > div > div:nth-child(2) > div > div:nth-child(2)").catch(err =>{
         throw err;
       });
@@ -44,6 +48,11 @@ const run = async (req, res) => {
     await page.waitFor(3000);
     await page.click("#main > footer > div > div:nth-child(3) > button > span");
     await page.waitFor(8000);
+    
+    // code for turn chat to unread
+    // const chats = await page.$$('#pane-side > div:nth-child(1) > div > div > div > div > div > div > div:nth-child(1) > div > span > span');
+    // const myChat = Array.from(chats).filter(chat => chat.innerHTML !== process.env.WA_USERNAME)[0];
+    
   };
 
   const main = async () => {
