@@ -31,9 +31,13 @@ const run = async (req, res) => {
 
     await page.click("#action-button");
 
+    await page.waitFor(3000);
+
+    await page.click('#content > div > div > div > a');
+
     // wait for send button to click
     await page.waitForSelector("#main > footer > div > div:nth-child(3) > button > span", {
-      timeout: 120000
+      timeout: 180000
     }).catch(async (err) => {
       console.log(err);
       // if fails to find it, try to send by pressing enter
@@ -41,13 +45,13 @@ const run = async (req, res) => {
         throw err;
       });
       await page.keyboard.press('Enter');
-      await page.waitFor(8000);
+      await page.waitFor(3000);
       await browser.close()
       throw Error('done')
     });
     await page.waitFor(3000);
     await page.click("#main > footer > div > div:nth-child(3) > button > span");
-    await page.waitFor(8000);
+    await page.waitFor(3000);
     
     // code for turn chat to unread
     // const chats = await page.$$('#pane-side > div:nth-child(1) > div > div > div > div > div > div > div:nth-child(1) > div > span > span');
@@ -95,7 +99,7 @@ const run = async (req, res) => {
       // } else {
       //   throw Error("Cant find google login input");
       // }
-      await page.waitFor(8000);
+      await page.waitFor(3000);
     };
     const page = await browser.newPage();
     await page.setUserAgent(process.env.USER_AGENT);
