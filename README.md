@@ -6,7 +6,10 @@ Wanna do things the easy way? Cheating your way into _proness_?
 
 You came into the right place
 
-## ENV variables needed to run
+## ⏮️ Prerequisits
+Set `Fanatic` medal on your StackOverflow account as the **next badge**
+
+## 💫 ENV variables needed to run
 | Name              | Meaning     |
 | :------------------:| :-----------|
 | USERNAME          | StackOverflow username|
@@ -16,3 +19,8 @@ You came into the right place
 | WA_LOCAL_STORAGE  | Stringified version of local storage from `https://web.whatsapp.com` once you logged in through the QR|
 | COOKIES           | Stringified version of cookies on StackOverflow and Whatsapp Web |
 | USER_AGENT        | The user agent you'd like to use. I suggest you open your preferred browser and type on the console `navigator.userAgent` |
+
+## ✨ What this runs
+Project runs a web server with one endpoint: `/run`
+
+This endpoint will access your StackOverflow account, and then send your progress through WhatsApp
