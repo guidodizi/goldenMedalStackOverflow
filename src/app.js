@@ -1,9 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
-const controller = require('./controller')
 const rateLimit = require("express-rate-limit");
 const mongoose = require('mongoose');
+
+const controller = require('./controller')
+const {browserMiddleware} = require('./middlewares')
 
 mongoose.connect(process.env.MONGO, {useNewUrlParser: true});
 
@@ -18,8 +20,9 @@ app.use(cors());
 app.use(helmet());
 app.use(limiter);
 
-app.get('/run', controller.run)
-app.get('/check', controller.check)
+app.get('/run', browserMiddleware, controller.run);
+app.get('/check', controller.check);
+app.get('/savestate', browserMiddleware, controller.saveStateWhatsapp);
 
 app.listen(process.env.PORT || 5000, () =>
   console.log(`Server up & running on port: ${process.env.PORT || 5000}`)

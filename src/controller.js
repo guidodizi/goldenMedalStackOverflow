@@ -1,25 +1,38 @@
 const puppeteer = require("puppeteer");
+const _ = require("lodash");
 const moment = require("moment");
 require("dotenv").config();
-
-const cookies = JSON.parse(process.env.COOKIES);
-const localStorage = JSON.parse(process.env.WA_LOCAL_STORAGE);
 const Log = require('./log.model');
+const Whatsapp = require('./whatsapp.model');
+
+async function setLocalStorage(browser) {
+  const page = await browser.newPage();
+  await page.setUserAgent(process.env.USER_AGENT);
+  await page.goto(`https://web.whatsapp.com`, {waitUntil: "networkidle2"});
+
+  const last = await Whatsapp.findOne().sort({createdAt: -1}).exec()
+  // set local storage for Whatsapp
+  await page.evaluate(last => {
+    Object.keys(last).map(key => {
+      localStorage.setItem(key, last[key]);
+    });
+  }, last.localStorage);
+
+  await page.close();
+}
+
+async function saveLocalStorage(page) {
+  const localStorage = await page.evaluate(() => Object.assign({}, window.localStorage));
+
+  const whatsapp = new Whatsapp({localStorage: localStorage});
+  await whatsapp.save()
+}
 
 async function sendToWhatsapp(browser, result) {
   const page = await browser.newPage();
   await page.setUserAgent(process.env.USER_AGENT);
-  cookies.forEach(async cookie => await page.setCookie(cookie));
 
-  await page.goto(`https://web.whatsapp.com`, {waitUntil: "networkidle2"});
-
-  // set local storage for Whatsapp
-  await page.evaluate(initLocalStorage => {
-    initLocalStorage.forEach(elem => {
-      console.log(elem);
-      localStorage.setItem(elem.key, JSON.stringify(elem.value));
-    });
-  }, localStorage);
+  await setLocalStorage(browser)
 
   await page.waitFor(3000);
 
@@ -29,8 +42,12 @@ async function sendToWhatsapp(browser, result) {
   });
 
   await page.click("#action-button");
-
   await page.waitFor(3000);
+
+  await page.click("#fallback_block > div > div > a");
+  await page.waitFor(3000);
+
+  await saveLocalStorage(page);
 
   await page.click('#content > div > div > div > a');
 
@@ -53,8 +70,7 @@ async function sendToWhatsapp(browser, result) {
   await page.waitFor(3000);
 };
 
-async function runBot(){
-  const browser = await puppeteer.launch({headless: false, args: ['--no-sandbox', '--disable-setuid-sandbox']});
+async function runBot(browser) {
 
   const runLogin = async login => {
     console.log("RUN LOGIN");
@@ -73,8 +89,6 @@ async function runBot(){
   const page = await browser.newPage();
   await page.setUserAgent(process.env.USER_AGENT);
 
-  cookies.forEach(async cookie => await page.setCookie(cookie));
-
   await page.goto(`https://stackoverflow.com/users${encodeURI(process.env.SO_USER)}`, {
     waitUntil: "networkidle2"
   });
@@ -89,15 +103,15 @@ async function runBot(){
   if (login1) {
     await runLogin(login1).catch(async (err) => {
       console.log(err);
-      await sendToWhatsapp(browser, "Couldn't log in");
+      return "Couldn't log in";
     });
   } else if (login2) {
     await runLogin(login2).catch(async (err) => {
       console.log(err);
-      await sendToWhatsapp(browser, "Couldn't log in");
+      return "Couldn't log in";
     });
   } else {
-    await sendToWhatsapp(browser, "Can't find log in on StackOverflow. Robot detected");
+    return "Can't find log in on StackOverflow. Robot detected";
   }
 
   const [badge, result] = await page
@@ -119,25 +133,48 @@ async function runBot(){
     })
     .catch(async (err) => {
       console.log(err);
-      await sendToWhatsapp(browser, "Couldn't find results on StackOverflow's page");
+      return "Couldn't find results on StackOverflow's page";
     });
 
   if (badge === "Fanatic") {
-    const log = new Log({ progress: result });
+    const log = new Log({progress: result});
     await log.save();
-    await sendToWhatsapp(browser, `StackOverflow result: ${result}`);
+    return `StackOverflow result: ${result}`
   } else {
-    await sendToWhatsapp(browser, `StackOverflow tracked badge is not Fanatic`);
+    return `StackOverflow tracked badge is not Fanatic`
   }
-  await browser.close();
 };
 
+async function saveStateWhatsapp(req, res) {
+  try {
+    const page = await req.browser.newPage();
+    await page.setUserAgent(process.env.USER_AGENT);
+
+    await setLocalStorage(req.browser)
+    await page.waitFor(3000)
+
+    await page.goto(`https://web.whatsapp.com`, {waitUntil: "networkidle2"});
+    await page.waitFor(3000)
+
+    await saveLocalStorage(page)
+    return res.send({saved: true})
+  } catch (err) {
+    return res.send({saved: false, error: err})
+  }
+}
+
+
 async function run(req, res) {
-  // fire and forget
-  runBot()
+  const result = await runBot(req.browser)
     .catch(err => {
       console.log(err);
       return res.send({started: true, err})
+    });
+
+  // Fire & Forget
+  sendToWhatsapp(req.browser, result)
+    .then(async () => {
+      await req.browser.close();
     });
   return res.send({started: true})
 }
@@ -152,5 +189,6 @@ async function check(req, res) {
 
 module.exports = {
   run,
-  check
+  check,
+  saveStateWhatsapp
 }
