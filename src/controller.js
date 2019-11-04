@@ -48,8 +48,7 @@ async function sendToWhatsapp(browser, result) {
   await page.waitFor(3000);
 
   await saveLocalStorage(page);
-
-  await page.click('#content > div > div > div > a');
+  await page.waitFor(3000);
 
   // wait for send button to click
   await page.waitForSelector("#main > footer > div > div:nth-child(3) > button > span", {
