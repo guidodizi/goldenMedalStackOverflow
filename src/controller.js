@@ -97,13 +97,8 @@ async function runBot(browser) {
     "body > div.topbar._old > div.network-items > div.login-links-container > a:nth-child(2)"
   );
 
-  if (login1) {
-    await runLogin(login1).catch(async (err) => {
-      console.log(err);
-      return "Couldn't log in";
-    });
-  } else if (login2) {
-    await runLogin(login2).catch(async (err) => {
+  if (login1 || login2) {
+    await runLogin(login1 || login2).catch(async (err) => {
       console.log(err);
       return "Couldn't log in";
     });
