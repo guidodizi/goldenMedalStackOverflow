@@ -92,9 +92,7 @@ async function runBot(browser) {
     waitUntil: "networkidle2"
   });
 
-  const login1 = await page.$(
-    "body > header > div > ol.-secondary.js-secondary-topbar-links.drop-icons-responsively.user-logged-out.the-js-is-handling-responsiveness > li.-ctas > a.login-link.s-btn.btn-topbar-clear.py8.js-gps-track"
-  );
+  const login1 = await page.$("a.login-link");
   const login2 = await page.$(
     "body > div.topbar._old > div.network-items > div.login-links-container > a:nth-child(2)"
   );
