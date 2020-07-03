@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const moment = require('moment');
+import { Schema, model } from 'mongoose';
+import moment from 'moment';
 
-const LogSchema = new mongoose.Schema({
+const LogSchema = new Schema({
   progress: String,
   createdAt: Date,
 });
@@ -11,6 +11,6 @@ LogSchema.pre('save', function(next) {
     this.createdAt = moment().format('YYYY-MM-DD');
   }
   next();
-})
+});
 
-module.exports =  mongoose.model('Log', LogSchema);
+export default model('Log', LogSchema);
