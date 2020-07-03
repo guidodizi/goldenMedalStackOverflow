@@ -1,3 +1,4 @@
+
 # 🥇 Golden Medal on StackOverflow
 
 Want to look like a _pro_ on StackOverflow but you are too stupid to answer any difficult question so as to get enough upvotes?
@@ -5,6 +6,11 @@ Want to look like a _pro_ on StackOverflow but you are too stupid to answer any 
 Wanna do things the fun way? _Hacking_ your way in?
 
 You came into the right place
+
+## 🙏 Disclaimer
+I've always been dazzled by how the developer community has always come together and shared knowledge without any direct benefit. I believe this was a key factor for striving and accomplishing all the community has achieved.
+
+By no means does this repository tend to inflict this achievement, but rather share a fun personal experience to automate a mundane task such as logging in for 100 days straight.
 
 ## ⏮️ Prerequisits
 Set `Fanatic` golden medal _(Visit the site each day for 100 consecutive days)_ as your **next badge** on your StackOverflow account.
